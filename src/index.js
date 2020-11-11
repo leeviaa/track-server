@@ -1,7 +1,9 @@
 require('./models/User')
+require('./models/Tracks')
 const express = require('express')
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/authRoutes')
+const authRoutes = require('./routes/authRoutes');
+const requireAuth = require('./middlewares/requireAuth')
 const bodyParser = require('body-parser');
 //init express server for whole app
 const app = express();
@@ -30,8 +32,10 @@ mongoose.connection.on('error', (err) => {
 
 
 //connects whole app to send hi there whenever a request is made
-app.get('/', (req,res) => {
-  res.send('Hi there! :) ')
+//passing requireAuth middleware in 2nd arg so that it gets ran from any get request made in the app
+app.get('/', requireAuth, (req,res) => {
+  //have access to this because of middleware and assigning req.user
+  res.send(`Your email: ${req.user.email}`)
 })
 
 //app listens for changes on port 3000
